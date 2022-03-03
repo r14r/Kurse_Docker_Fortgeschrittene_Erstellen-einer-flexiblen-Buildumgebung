@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ANACONDA3=/opt/anaconda3
+
+$ANACONDA3/bin/jupyter-notebook
+
