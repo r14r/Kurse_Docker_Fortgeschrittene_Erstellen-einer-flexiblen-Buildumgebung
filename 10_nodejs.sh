@@ -4,7 +4,10 @@
 
 #--------------------------------------------------------------------------------------------------
 curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
-apt-get install --yes nodejs
+
+#
+apt-get install --yes nodejs                      && \
+rm -rf /var/lib/apt/lists/*
 
 #
 npm -g update npm

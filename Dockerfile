@@ -1,5 +1,5 @@
 #==================================================================================================
-FROM ubuntu:latest as builder
+FROM ubuntu:22.04 as builder
 
 #--------------------------------------------------------------------------------------------------
 # 
@@ -49,16 +49,19 @@ RUN bash            /tmp/${SCRIPT_JULIA}
 FROM with_julia as with_anaconda
 
 ARG SCRIPT_ANACONDA=21_anaconda3.sh
-ADD ${SCRIPT_ANACONDA} /tmp/${SCRIPT_ANACONDA}
-RUN bash               /tmp/${SCRIPT_ANACONDA}
+ARG SCRIPT_ANACONDA_AS_USER=21_anaconda3_as_user.sh
+
+ADD ${SCRIPT_ANACONDA}         /tmp/${SCRIPT_ANACONDA}
+ADD ${SCRIPT_ANACONDA_AS_USER} /tmp/${SCRIPT_ANACONDA_AS_USER}
+RUN bash                       /tmp/${SCRIPT_ANACONDA}
 
 #--------------------------------------------------------------------------------------------------
 #
 #--------------------------------------------------------------------------------------------------
 FROM with_anaconda as with_anaconda_user
-ARG SCRIPT_ANACONDA_USER=22_anaconda3_as_user.sh
-ADD ${SCRIPT_ANACONDA_USER} /tmp/${SCRIPT_ANACONDA_USER}
-RUN cat                     /tmp/${SCRIPT_ANACONDA_USER} | su user
+#ARG SCRIPT_ANACONDA_USER=22_anaconda3_as_user.sh
+#ADD ${SCRIPT_ANACONDA_USER} /tmp/${SCRIPT_ANACONDA_USER}
+#RUN cat                     /tmp/${SCRIPT_ANACONDA_USER} | su user
 
 #--------------------------------------------------------------------------------------------------
 #

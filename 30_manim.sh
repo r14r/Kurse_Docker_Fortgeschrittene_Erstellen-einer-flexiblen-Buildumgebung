@@ -3,7 +3,8 @@
 . environment
 
 #--------------------------------------------------------------------------------------------------
-apt-get install --yes libcairo2-dev libpango1.0-dev ffmpeg
+apt-get install --yes libcairo2-dev libpango1.0-dev ffmpeg  && \
+rm -rf /var/lib/apt/lists/*
 
 #--------------------------------------------------------------------------------------------------
 (

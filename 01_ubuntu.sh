@@ -19,7 +19,10 @@ ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
 dpkg-reconfigure -f noninteractive tzdata
 
 #
-apt-get install --yes build-essential lsb-release curl sudo vim python3-pip
+apt-get install --yes --no-install-recommends build-essential lsb-release curl sudo  python3-pip    && \
+rm -rf /var/lib/apt/lists/* to same layer
+#apt-get install --yes vim
+
 
 #
 echo "root:password" | chpasswd
