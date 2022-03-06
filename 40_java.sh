@@ -3,9 +3,10 @@
 . environment
 
 #--------------------------------------------------------------------------------------------------
-apt-get install --yes libcairo2-dev libpango1.0-dev ffmpeg
+apt-get install default-jre
 
 #--------------------------------------------------------------------------------------------------
 (
-    echo "$(basename "$0") installed"
+    echo "$(basename "$0")"
+    echo "- java $(java -version)"
 ) >>$INSTALLED_SOFTWARE

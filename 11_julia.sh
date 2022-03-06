@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------------------------------------
 # get environment variables
-. .env
+. environment
 
 #--------------------------------------------------------------------------------------------------
 curl -o  $JULIA_INSTALLER -L 'https://julialang-s3.julialang.org/bin/linux/x64/1.7/julia-1.7.2-linux-x86_64.tar.gz'
@@ -12,7 +12,11 @@ chgrp work $JULIA_HOME
 chmod g+w  $JULIA_HOME
 
 PATH=$PATH:$JULIA_HOME/bin
-echo "\nPATH=$PATH:$JULIA_HOME/bin"  >>$HOME/.bashrc
+(
+    echo "# Julia programming language"
+    echo "PATH=\$PATH:$JULIA_HOME/bin"
+    echo ""
+)  >>$SYSTEM_BASHRC
 
 rm $JULIA_INSTALLER
 

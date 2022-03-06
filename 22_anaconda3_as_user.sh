@@ -1,13 +1,17 @@
 #--------------------------------------------------------------------------------------------------
 # get environment variables
-. .env
+. environment
 
 #--------------------------------------------------------------------------------------------------
 mkdir -p $HOME/.local/bin
 bash $ANACONDA_INSTALLER -b -u -p $ANACONDA_HOME
 
+#
 PATH=$PATH:$ANACONDA_HOME/bin
-echo "\nPATH=$PATH:$ANACONDA_HOME/bin"  >>$HOME/.bashrc
+(
+    echo ""
+    echo "PATH=\$PATH:$ANACONDA_HOME/bin:$HOME/.local/bin"
+)  >>$HOME/.bashrc
 
 conda init bash
 
