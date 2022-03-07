@@ -11,12 +11,12 @@ ADD environment environment
 #--------------------------------------------------------------------------------------------------
 FROM builder as ubuntu_core
 ARG SCRIPT_PREPARE=00_prepare.sh
-ADD ${SCRIPT_PREPARE}    /tmp/${SCRIPT_PREPARE}
+ADD ${SCRIPT_PREPARE}     /tmp/${SCRIPT_PREPARE}
 RUN bash                 /tmp/${SCRIPT_PREPARE}
 
-ARG SCRIPT_UBUNTU=01_ubuntu.sh
-ADD ${SCRIPT_UBUNTU}    /tmp/${SCRIPT_UBUNTU}
-RUN bash                /tmp/${SCRIPT_UBUNTU}
+ARG SCRIPT_BASE=01_base.sh
+ADD ${SCRIPT_BASE}      /tmp/${SCRIPT_BASE}
+RUN bash                /tmp/${SCRIPT_BASE}
 
 #--------------------------------------------------------------------------------------------------
 # LOCAL USER

@@ -5,8 +5,12 @@ CONTAINER := playground_docker
 default:
 	cat Makefile
 
-build:
-	docker build -t ${CONTAINER} .
+
+ubuntu:
+	rm -rf tmp && mkdir 							tmp
+	cp scripts/ubuntu/*.sh Dockerfile environment	tmp
+	cd tmp && docker build -t ${CONTAINER} .
+
 
 clean:
 	docker_rmi_all
