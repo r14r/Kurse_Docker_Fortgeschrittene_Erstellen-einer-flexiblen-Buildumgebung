@@ -5,6 +5,7 @@
 #--------------------------------------------------------------------------------------------------
 # Download Installer
 curl -o   $ANACONDA_INSTALLER -L 'https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh'
+chmod 777 $ANACONDA_INSTALLER
 
 #--------------------------------------------------------------------------------------------------
 rm -rf     $ANACONDA_HOME

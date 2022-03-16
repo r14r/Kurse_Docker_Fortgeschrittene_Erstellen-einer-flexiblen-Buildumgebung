@@ -1,0 +1,114 @@
+#==================================================================================================
+FROM ubuntu:latest as builder
+
+#--------------------------------------------------------------------------------------------------
+ARG USR_NAME=user
+ARG USR_HOME=/home/user
+ARG GRP_NAME=work
+
+ARG HOME_ANACONDA=/opt/anaconda3
+ARG HOME_JULIA=/opt/julia-1.7.2
+
+#--------------------------------------------------------------------------------------------------
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ='Europe/Berlin'
+
+RUN echo $TZ > /etc/timezone 
+
+RUN apt-get update                                                      && \
+    apt-get install --yes apt-utils
+
+#
+RUN apt-get -y install tzdata                                           && \
+    rm /etc/localtime                                                   && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime                      && \
+    dpkg-reconfigure -f noninteractive tzdata                           
+
+#
+RUN apt-get install --yes --no-install-recommends   build-essential     \
+                                                    lsb-release         \
+                                                    gnupg               \
+                                                    curl                \
+                                                    sudo                \
+                                                    python3-pip      && \
+    rm -rf /var/lib/apt/lists/* to same layer
+
+
+#
+RUN echo "root:password" | chpasswd
+
+#--------------------------------------------------------------------------------------------------
+RUN groupadd ${GRP_NAME}             --gid 1000                           && \
+    adduser  ${USR_NAME}  --uid 1000 --gid 1000 --home ${USR_HOME} --disabled-password --gecos User
+
+#--------------------------------------------------------------------------------------------------
+# Setup sudo
+RUN echo "%${GRP_NAME} ALL=(ALL:ALL) NOPASSWD:ALL"  >/etc/sudoers.d/group
+
+#--------------------------------------------------------------------------------------------------
+RUN curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
+
+#
+RUN apt-get install --yes nodejs                        && \
+    rm -rf /var/lib/apt/lists/*
+
+#
+RUN npm -g update npm                                   && \
+    npm -g install yarn npm-check-updates ijavascript
+
+
+#--------------------------------------------------------------------------------------------------
+RUN curl -o  JULIA_INSTALLER -L 'https://julialang-s3.julialang.org/bin/linux/x64/1.7/julia-1.7.2-linux-x86_64.tar.gz'
+
+RUN tar xfz  JULIA_INSTALLER -C /opt
+
+RUN chown user ${HOME_JULIA}                  && \
+    chgrp work ${HOME_JULIA}                  && \
+    chmod g+w  ${HOME_JULIA}
+
+RUN rm JULIA_INSTALLER
+
+#--------------------------------------------------------------------------------------------------
+# Download Installer
+RUN curl -o   /tmp/ANACONDA_INSTALLER -L 'https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh'
+RUN chmod 777 /tmp/ANACONDA_INSTALLER
+
+#--------------------------------------------------------------------------------------------------
+RUN rm -rf     ${HOME_ANACONDA}               && \
+    mkdir      ${HOME_ANACONDA}               && \
+    chown user ${HOME_ANACONDA}               && \
+    chgrp work ${HOME_ANACONDA}               && \
+    chmod g+w  ${HOME_ANACONDA}
+
+#--------------------------------------------------------------------------------------------------
+USER ${USR_NAME}
+
+RUN mkdir -p $HOME/.local/bin
+RUN bash /tmp/ANACONDA_INSTALLER -b -u -p ${HOME_ANACONDA}
+#RUN rm   /tmp/ANACONDA_INSTALLER
+
+RUN (echo ""; echo "PATH=\$PATH:${HOME_ANACONDA}/bin:$HOME/.local/bin")  >>$HOME/.bashrc
+
+RUN ${HOME_ANACONDA}/bin/conda init bash
+
+#
+RUN rm -f $HOME/.jupyter/jupyter_notebook_config.py
+RUN ${HOME_ANACONDA}/bin/jupyter notebook --generate-config
+RUN sed -i '1,$s/.*NotebookApp.notebook_dir.*/c.NotebookApp.notebook_dir="\/notebooks"/g'  $HOME/.jupyter/jupyter_notebook_config.py
+
+RUN echo "$HOME_ANACONDA/bin/jupyter notebook --no-browser --ip='*' --NotebookApp.token='' --NotebookApp.password=''" >$HOME/.local/bin/run_jupyter
+RUN chmod +x $HOME/.local/bin/run_jupyter
+
+#RUN python3 -m pip install manim jupyter-manim
+
+# Jupyter Extensions
+RUN (echo 'using Pkg'; echo 'Pkg.add("IJulia")') | ${HOME_JULIA}/bin/julia
+
+# Javascript Extensions
+RUN PATH=$PATH:${HOME_ANACONDA}/bin:${HOME_JULLIA}/bin:$HOME/.local/bin ijsinstall
+
+#--------------------------------------------------------------------------------------------------
+USER        ${USR_NAME}
+WORKDIR     ${USR_HOME}}
+
+CMD [ "bash" ]

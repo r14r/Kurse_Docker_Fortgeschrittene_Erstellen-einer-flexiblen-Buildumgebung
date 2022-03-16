@@ -14,16 +14,25 @@ PATH=$PATH:$ANACONDA_HOME/bin
 )  >>$HOME/.bashrc
 
 conda init bash
-
 #
 rm  $HOME/.jupyter/jupyter_notebook_config.py
 jupyter notebook --generate-config
 sed -i '1,$s/.*NotebookApp.notebook_dir.*/c.NotebookApp.notebook_dir="\/notebooks"/g'  $HOME/.jupyter/jupyter_notebook_config.py
 
-echo "$ANACONDA_HOME/bin/jupyter notebook --no-browser --ip='*' --NotebookApp.token='' --NotebookApp.password=''" >$HOME/.local/bin/run_jupyter
+(
+    echo "$ANACONDA_HOME/bin/conda env list"
+    echo "which python"
+    echo "which jupyter"
+    
+    echo "$ANACONDA_HOME/bin/jupyter notebook --no-browser --ip='*' --NotebookApp.token='' --NotebookApp.password=''" 
+) >$HOME/.local/bin/run_jupyter
 chmod +x $HOME/.local/bin/run_jupyter
 
-#RUN python3 -m pip install manim jupyter-manim
+#
+conda activate base
+
+python3 -m pip install ipyturtle # manim jupyter-manim
+
 
 # Jupyter Extensions
 (echo 'using Pkg'; echo 'Pkg.add("IJulia")') | julia
